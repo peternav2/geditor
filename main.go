@@ -1,11 +1,14 @@
 package main
 
 import (
+	"fmt"
 	"image/color"
 	"log"
 	"os"
+	"unicode"
 
 	"gioui.org/app"
+	"gioui.org/io/key"
 	"gioui.org/unit"
 
 	"gioui.org/layout"
@@ -23,9 +26,6 @@ func check(e error) {
 }
 
 func main() {
-	file, err := os.Create("testFile")
-	check(err)
-	defer file.Close()
 
 	go func() {
 		window := new(app.Window)
@@ -38,17 +38,23 @@ func main() {
 }
 
 func run(window *app.Window) error {
+	file, err := os.Create("testFile.txt")
+	check(err)
+	defer file.Close()
+
 	var ops op.Ops
 	theme := material.NewTheme()
 
 	editor := new(widget.Editor)
-	editor.SingleLine = true
+	editor.SingleLine = false
 	for {
 		switch e := window.Event().(type) {
 		case app.DestroyEvent:
 			return e.Err
 		case app.FrameEvent:
 			gtx := app.NewContext(&ops, e)
+			saveEvent = key.Event{name: unicode.ToUpper('s'), Modifiers: key.ModShift, State: key.Press}
+			app.Fullscreen.String
 			layout.Flex{Axis: layout.Vertical}.Layout(
 				gtx,
 				layout.Rigid(func(gtx layout.Context) layout.Dimensions {
@@ -57,11 +63,19 @@ func run(window *app.Window) error {
 					})
 				}),
 			)
+			fmt.Println(editor.Text())
+			file.WriteString(editor.Text())
+
 			e.Frame(gtx.Ops)
 		}
 	}
 }
 
+func handleInput(window *app.window, editor *widget.Editor) {
+	for _, ke := range window.Events(key.Event(editor)) {
+
+	}
+}
 func test(window *app.Window) error {
 	theme := material.NewTheme()
 	var ops op.Ops
@@ -78,6 +92,7 @@ func test(window *app.Window) error {
 			material.NewTheme().Bg = bcolor
 			// Define an large label with an appropriate text:
 		}
+
 	}
 }
 
@@ -95,5 +110,4 @@ func draw(ops *op.Ops, e app.FrameEvent) {
 	title.Alignment = text.Middle
 	title.Layout(gtx)
 	e.Frame(gtx.Ops)
-
 }

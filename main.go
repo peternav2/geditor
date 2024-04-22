@@ -5,7 +5,6 @@ import (
 	"image/color"
 	"log"
 	"os"
-	"unicode"
 
 	"gioui.org/app"
 	"gioui.org/io/key"
@@ -53,8 +52,10 @@ func run(window *app.Window) error {
 			return e.Err
 		case app.FrameEvent:
 			gtx := app.NewContext(&ops, e)
-			saveEvent = key.Event{name: unicode.ToUpper('s'), Modifiers: key.ModShift, State: key.Press}
-			app.Fullscreen.String
+			s := 's'
+			// upperS := unicode.ToUpper(s)
+			saveEvent := key.Event{Name: "S", Modifiers: key.ModShift, State: key.Press}
+
 			layout.Flex{Axis: layout.Vertical}.Layout(
 				gtx,
 				layout.Rigid(func(gtx layout.Context) layout.Dimensions {
@@ -71,9 +72,11 @@ func run(window *app.Window) error {
 	}
 }
 
-func handleInput(window *app.window, editor *widget.Editor) {
-	for _, ke := range window.Events(key.Event(editor)) {
-
+func handleInput(window *app.Window, editor *widget.Editor) {
+	for _, e := range window.Events(key.Tag(editor)) {
+		if e, ok := e.(key.Event); ok && e.State == key.Press && e.Name == "S" && e.Modifiers.Contain(key.ModCtrl) {
+			save(editor.Text())
+		}
 	}
 }
 func test(window *app.Window) error {

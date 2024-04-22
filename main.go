@@ -7,7 +7,6 @@ import (
 	"os"
 
 	"gioui.org/app"
-	"gioui.org/io/key"
 	"gioui.org/unit"
 
 	"gioui.org/layout"
@@ -52,9 +51,8 @@ func run(window *app.Window) error {
 			return e.Err
 		case app.FrameEvent:
 			gtx := app.NewContext(&ops, e)
-			s := 's'
-			// upperS := unicode.ToUpper(s)
-			saveEvent := key.Event{Name: "S", Modifiers: key.ModShift, State: key.Press}
+			// input.Source.Event()
+			// saveEvent := key.Event{Name: "S", Modifiers: key.ModShift, State: key.Press}
 
 			layout.Flex{Axis: layout.Vertical}.Layout(
 				gtx,
@@ -72,13 +70,13 @@ func run(window *app.Window) error {
 	}
 }
 
-func handleInput(window *app.Window, editor *widget.Editor) {
-	for _, e := range window.Events(key.Tag(editor)) {
-		if e, ok := e.(key.Event); ok && e.State == key.Press && e.Name == "S" && e.Modifiers.Contain(key.ModCtrl) {
-			save(editor.Text())
-		}
-	}
-}
+//	func handleInput(window *app.Window, editor *widget.Editor) {
+//		for _, e := range window.Events(key.Tag(editor)) {
+//			if e, ok := e.(key.Event); ok && e.State == key.Press && e.Name == "S" && e.Modifiers.Contain(key.ModCtrl) {
+//				save(editor.Text())
+//			}
+//		}
+//	}
 func test(window *app.Window) error {
 	theme := material.NewTheme()
 	var ops op.Ops

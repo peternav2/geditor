@@ -36,6 +36,7 @@ func main() {
 }
 
 func run(window *app.Window) error {
+
 	file, err := os.Create("testFile.txt")
 	check(err)
 	defer file.Close()
@@ -53,21 +54,25 @@ func run(window *app.Window) error {
 			gtx := app.NewContext(&ops, e)
 			// input.Source.Event()
 			// saveEvent := key.Event{Name: "S", Modifiers: key.ModShift, State: key.Press}
-
-			layout.Flex{Axis: layout.Vertical}.Layout(
-				gtx,
-				layout.Rigid(func(gtx layout.Context) layout.Dimensions {
-					return layout.UniformInset(unit.Dp(theme.TextSize)).Layout(gtx, func(gtx layout.Context) layout.Dimensions {
-						return material.Editor(theme, editor, "Enter Text ...").Layout(gtx)
-					})
-				}),
-			)
+			addEditor(window, gtx, theme, editor)
 			fmt.Println(editor.Text())
 			file.WriteString(editor.Text())
 
 			e.Frame(gtx.Ops)
 		}
 	}
+}
+func addEditor(window *app.Window, gtx layout.Context, theme *material.Theme, editor *widget.Editor) {
+
+	layout.Flex{Axis: layout.Vertical}.Layout(
+		gtx,
+		layout.Rigid(func(gtx layout.Context) layout.Dimensions {
+			return layout.UniformInset(unit.Dp(theme.TextSize)).Layout(gtx, func(gtx layout.Context) layout.Dimensions {
+				return material.Editor(theme, editor, "Enter Text ...").Layout(gtx)
+			})
+		}),
+	)
+
 }
 
 //	func handleInput(window *app.Window, editor *widget.Editor) {
@@ -85,6 +90,7 @@ func test(window *app.Window) error {
 		case app.DestroyEvent:
 			return e.Err
 		case app.FrameEvent:
+
 			// This graphics context is used for managing the rendering state.
 			bcolor := color.NRGBA{R: 252, G: 2, B: 197, A: 255}
 			draw(&ops, e)

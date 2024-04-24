@@ -9,6 +9,7 @@ import (
 	"gioui.org/app"
 	"gioui.org/unit"
 
+	"gioui.org/io/key"
 	"gioui.org/layout"
 	"gioui.org/op"
 	"gioui.org/op/paint"
@@ -46,6 +47,7 @@ func run(window *app.Window) error {
 
 	editor := new(widget.Editor)
 	editor.SingleLine = false
+	// editor.SetText("hello editor")
 	for {
 		switch e := window.Event().(type) {
 		case app.DestroyEvent:
@@ -54,18 +56,38 @@ func run(window *app.Window) error {
 			gtx := app.NewContext(&ops, e)
 			// input.Source.Event()
 			// saveEvent := key.Event{Name: "S", Modifiers: key.ModShift, State: key.Press}
-			addEditor(window, gtx, theme, editor)
-			fmt.Println(editor.Text())
-			file.WriteString(editor.Text())
 
+			addEditor(&gtx, theme, editor)
+			//event.Op(gtx.Ops, &editor)
+			for {
+				event, ok := gtx.Event(
+					key.Filter{
+						Name: key.NameUpArrow,
+						//"ctrl-s"
+					},
+				)
+				if !ok {
+					fmt.Println("we are breaking")
+					break
+				}
+				ev, ok := event.(key.Event)
+				if !ok {
+					fmt.Println("we are continuing")
+					continue
+				}
+				println(ev.State.String())
+				println(ev.State.String())
+			}
 			e.Frame(gtx.Ops)
+
 		}
 	}
 }
-func addEditor(window *app.Window, gtx layout.Context, theme *material.Theme, editor *widget.Editor) {
 
+// window not needed, but maybe will need?
+func addEditor(gtx *layout.Context, theme *material.Theme, editor *widget.Editor) {
 	layout.Flex{Axis: layout.Vertical}.Layout(
-		gtx,
+		*gtx,
 		layout.Rigid(func(gtx layout.Context) layout.Dimensions {
 			return layout.UniformInset(unit.Dp(theme.TextSize)).Layout(gtx, func(gtx layout.Context) layout.Dimensions {
 				return material.Editor(theme, editor, "Enter Text ...").Layout(gtx)
@@ -118,3 +140,26 @@ func draw(ops *op.Ops, e app.FrameEvent) {
 	title.Layout(gtx)
 	e.Frame(gtx.Ops)
 }
+
+// 	event, ok := gtx.Event(
+// 		key.Filter{
+// 			Focus:    &editor,
+// 			Optional: key.ModCtrl,
+// 			Name:     "S",
+// 		},
+// 	)
+// 	if !ok {
+// 		fmt.Println("we broke")
+// 		break
+// 	}
+// 	ev, ok := event.(key.Event)
+// 	if !ok {
+// 		fmt.Println("we cont")
+// 		continue
+// 	}
+// 	if ev.Name == "S" {
+// 		fmt.Println("We Entered")
+// 	}
+// 	fmt.Println(editor.Text())
+// 	file.WriteString(editor.Text())
+// }
